@@ -1,3 +1,7 @@
 body {
     text-align: center;
 }
+
+h1 {
+    font: 2em/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
