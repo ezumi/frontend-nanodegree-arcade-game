@@ -80,7 +80,28 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+
+        if (checkCollisions()) {
+            player.death();
+        }
+    }
+
+    // Checks to see if the player's position and the enemy's position
+    // collides. Returns true if a collision occurs.
+    function checkCollisions() {
+        // Player's Y is slightly higher than the enemy. This
+        // difference is adjusted to match the enemy's position
+        var playerY = player.y - 14;
+        var collide = false;
+
+        allEnemies.forEach(function(enemy) {
+            // If the enemy is on the same row as the player and is within
+            // 80 pixels of the player's left or right, trigger a collison
+            if ((enemy.y === playerY) && (enemy.x >= player.x - 80) && (enemy.x <= player.x + 80))
+                collide = true;
+        });
+
+        return collide;
     }
 
     /* This is called by the update function and loops through all of the
