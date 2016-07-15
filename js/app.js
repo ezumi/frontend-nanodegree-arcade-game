@@ -30,7 +30,7 @@ Enemy.prototype.resetPosition = function() {
     // Set enemy's speed by multiplying default speed with a randomly
     // generated number between 1 - 5
     this.speed = DEFAULT_SPEED * (Math.floor(Math.random() * (5 - 1 + 1)) + 1);
-}
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -52,16 +52,14 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// Player class with initial score and 3 lives
 var Player = function() {
-    // Set score to zero and lives to 3
     this.score = 0;
     this.lives = 3;
     this.alive = true;
     this.sprite = 'images/char-boy.png';
 
+    // Initate starting position
     this.resetPosition();
 };
 
@@ -83,48 +81,46 @@ Player.prototype.resetPosition = function() {
         this.alive = true;
 };
 
-// Parameter: dt, a time delta between ticks
-Player.prototype.update = function(dt) {
-
-};
-
-// Function to determine what happens when specific game
-// keys are pressed
+// Function to determine what happens when specific
+// game keys are pressed
 Player.prototype.handleInput = function(keyCode) {
-    switch(keyCode) {
-        case 'left':
-            // Check to see if player has reach edge of screen
-            if (this.x > 0) {
-                this.x += -101;
-            }
-            break;
-        case 'up':
-            // Check to see if player has reached the river
-            if (this.y > 0) {
-                this.y += -83;
-
-                // Trigger win function when river has been reached
-                if (this.y === -10) {
-                    this.win();
+    // Only allow input if player is alive
+    if (this.alive) {
+        switch(keyCode) {
+            case 'left':
+                // Check to see if player has reach edge of screen
+                if (this.x > 0) {
+                    this.x += -101;
                 }
-            }
-            break;
-        case 'right':
-            if (this.x < 404) {
-                this.x += 101;
-            }
-            break;
-        case 'down':
-            if (this.y < 405) {
-                this.y += 83;
-            }
-            break;
+                break;
+            case 'up':
+                // Check to see if player has reached the river
+                if (this.y > 0) {
+                    this.y += -83;
+
+                    // Trigger win function when river has been reached
+                    if (this.y === -10) {
+                        this.win();
+                    }
+                }
+                break;
+            case 'right':
+                if (this.x < 404) {
+                    this.x += 101;
+                }
+                break;
+            case 'down':
+                if (this.y < 405) {
+                    this.y += 83;
+                }
+                break;
+        }
     }
 };
 
 // When the player wins, add to score and reset player position
 Player.prototype.win = function() {
-    this.score += 1;
+    this.score += 10;
     document.querySelector(".score").innerHTML = this.score;
     this.resetPosition();
 };
@@ -138,26 +134,89 @@ Player.prototype.death = function() {
      * with the enemy.
      */
     if (this.alive) {
-        // Player is now dead
+        // Set player to dead and subtract lives
         this.alive = false;
         this.lives -= 1;
         document.querySelector(".lives").innerHTML = this.lives;
 
+        // Reset player position after 150ms
         var _this = this;
-        setTimeout(function(){_this.resetPosition();}, 150);
+        setTimeout(function(){_this.resetPosition();}, 750);
 
         if (this.lives === 0) {
+            msg.showMessage("Game Over", 1500, true);
             this.lives = 3;
             this.score = 0;
             document.querySelector(".lives").innerHTML = 3;
             document.querySelector(".score").innerHTML = 0;
+        } else {
+            msg.showMessage("Ouch!", 750, true);
         }
     }
 };
 
+// Function to call to update player variables. Not in used at the moment
+// Parameter: dt, a time delta between ticks
+Player.prototype.update = function(dt) {
+    };
+
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+/* This class handles the displaying of messages in the game
+ * Variable: isMessage, set to true to display message.
+*/
+var Message = function() {
+    this.isMessage = false;
+    this.showBackground = false;
+    this.message = "";
+};
+
+/* Function to display messages
+ * Parameters: message, the message string to display
+ *             timer, length of time to show message
+ *             background, set to true to display black overlay background
+ */
+Message.prototype.showMessage = function(message, timer, background) {
+    this.isMessage = true;
+    this.message = message;
+    var _this = this;
+
+    if (background)
+        this.showBackground = true;
+
+    setTimeout(function(){
+        _this.isMessage = false;
+        _this.showBackground = false;
+    }, timer);
+};
+
+// Draw the message on the screen, required method for game
+Message.prototype.render = function() {
+    // Save current context
+    ctx.save();
+
+    // If showBackground is true, draw a black background at 65% opacity
+    if (this.showBackground) {
+        ctx.globalAlpha = 0.65;
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.globalAlpha = 1;
+    }
+
+    ctx.font = "36pt Impact";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = "2";
+    ctx.fillText(this.message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+    ctx.strokeText(this.message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+    // Restore context
+    ctx.restore();
 };
 
 // Now instantiate your objects.
@@ -171,6 +230,7 @@ for (var i = 0; i < 5; i++) {
 }
 
 var player = new Player();
+var msg = new Message();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
