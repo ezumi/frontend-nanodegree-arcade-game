@@ -80,28 +80,30 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-
-        if (checkCollisions()) {
-            player.death();
-        }
+        checkCollisions();
     }
 
-    // Checks to see if the player's position and the enemy's position
-    // collides. Returns true if a collision occurs.
+    // Function to detect collisions with gems or enemies
     function checkCollisions() {
-        // Player's Y is slightly higher than the enemy. This
-        // difference is adjusted to match the enemy's position
-        var playerY = player.y - 14;
-        var collide = false;
+        // Player's and Gem's Offset is adjusted to match those of the enemy and each other
+        var playerYOffset = player.y - 14;
+        var playerXOffset = player.x + 14.5;
+        var gemYOffset = gem.y - 23;
+
+        if ((gem.x === playerXOffset) && (gemYOffset === player.y)) {
+            if(player.alive)
+                player.addPoints(gem.points);
+            gem.stopTimer();
+            gem.resetPosition();
+            gem.startTimer(5000);
+        }
 
         allEnemies.forEach(function(enemy) {
             // If the enemy is on the same row as the player and is within
             // 80 pixels of the player's left or right, trigger a collison
-            if ((enemy.y === playerY) && (enemy.x >= player.x - 80) && (enemy.x <= player.x + 80))
-                collide = true;
+            if ((enemy.y === playerYOffset) && (enemy.x >= player.x - 80) && (enemy.x <= player.x + 80))
+                player.death();
         });
-
-        return collide;
     }
 
     /* This is called by the update function and loops through all of the
@@ -115,7 +117,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -169,14 +170,17 @@ var Engine = (function(global) {
          * the render function you have defined.
          */
 
+        gem.render();
+
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
         player.render();
 
-        if(msg.isMessage)
-            msg.render();
+        // Only display Message if it's isMessage variable is true
+        if(message.isMessage)
+            message.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -196,7 +200,10 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
     ]);
     Resources.onReady(init);
 
