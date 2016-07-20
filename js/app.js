@@ -38,7 +38,7 @@ Enemy.prototype.resetPosition = function() {
 Enemy.prototype.update = function(dt) {
     // If enemy reaches off screen, reset to start position and
     // generate new vertical position and speed
-    if (this.x > 505) {
+    if (this.x > ctx.canvas.width) {
         this.resetPosition();
     } else {
         // You should multiply any movement by the dt parameter
@@ -105,12 +105,13 @@ Player.prototype.handleInput = function(keyCode) {
                 // Check to see if player has reached the river
                 if (this.y > 0) {
                     this.y += -83;
-
                     // Add to score when river has been reached and
                     // reset player position
                     if (this.y === -10) {
+                        sounds.playSound(2);
                         this.addPoints(10);
-                        this.resetPosition();
+                        var _this = this;
+                        setTimeout(function(){_this.resetPosition();}, 200);
                     }
                 }
                 break;
@@ -125,6 +126,8 @@ Player.prototype.handleInput = function(keyCode) {
                 }
                 break;
         }
+        // Play moving sound effect
+        sounds.playSound(1);
     }
 };
 
@@ -146,12 +149,14 @@ Player.prototype.death = function() {
         setTimeout(function(){_this.resetPosition();}, 750);
 
         if (this.lives === 0) {
-            message.showMessage("Game Over!", 1500, true);
+            sounds.playSound(4);
+            message.showMessage("Game Over!\nFinal Score: "+this.score, 2000, true);
             this.lives = 3;
             this.score = 0;
             document.querySelector(".lives").innerHTML = 3;
             document.querySelector(".score").innerHTML = 0;
         } else {
+            sounds.playSound(3);
             message.showMessage("Ouch!", 750, true);
         }
     }
@@ -212,6 +217,18 @@ Gem.prototype.stopTimer = function() {
     clearInterval(this.timer);
 };
 
+// Function called when player grabs a gem
+Gem.prototype.gotGem = function() {
+    if(player.alive) {
+        player.addPoints(this.points);
+        sounds.playSound(0);
+    }
+
+    this.stopTimer();
+    this.resetPosition();
+    this.startTimer(5000);
+};
+
 /* Draw the gem on the screen, required method for game
  * Variables: SCALE, Scale to draw gem sprite
  *            TILE_HEIGHT, Width of tile
@@ -231,7 +248,7 @@ Gem.prototype.render = function () {
 var Message = function() {
     this.isMessage = false;
     this.showBackground = false;
-    this.message = "";
+    this.message = [];
 };
 
 /* Function to display messages
@@ -241,7 +258,7 @@ var Message = function() {
  */
 Message.prototype.showMessage = function(message, time, background) {
     this.isMessage = true;
-    this.message = message;
+    this.message = message.split("\n");
     var _this = this;
 
     if (background)
@@ -255,6 +272,9 @@ Message.prototype.showMessage = function(message, time, background) {
 
 // Draw the message on the screen, required method for game
 Message.prototype.render = function() {
+    // variable to define line height for text that spans multiple rows
+    var LINE_HEIGHT = 50;
+
     // Save current context
     ctx.save();
 
@@ -266,14 +286,19 @@ Message.prototype.render = function() {
         ctx.globalAlpha = 1;
     }
 
-    ctx.font = "36pt Impact";
+    ctx.font = "34pt Impact";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
     ctx.strokeStyle = "black";
     ctx.lineWidth = "2";
-    ctx.fillText(this.message, ctx.canvas.width / 2, ctx.canvas.height / 2);
-    ctx.strokeText(this.message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+    // Loop and print message string. If message array index is greater than 1, multiply
+    // line number by the LINE_HEIGHT for the new line's Y position
+    for (var i = 0; i < this.message.length; i++) {
+        ctx.fillText(this.message[i], ctx.canvas.width / 2, ctx.canvas.height / 2 + i * LINE_HEIGHT);
+        ctx.strokeText(this.message[i], ctx.canvas.width / 2, ctx.canvas.height / 2 + i * LINE_HEIGHT);
+    }
 
     // Restore context
     ctx.restore();

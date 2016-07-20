@@ -19,11 +19,15 @@ var Engine = (function(global) {
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
+
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
+
+    // Create gameSounds object
+    var sounds = new gameSounds();
 
     canvas.width = 505;
     canvas.height = 606;
@@ -90,20 +94,15 @@ var Engine = (function(global) {
         var playerXOffset = player.x + 14.5;
         var gemYOffset = gem.y - 23;
 
-        if ((gem.x === playerXOffset) && (gemYOffset === player.y)) {
-            if(player.alive)
-                player.addPoints(gem.points);
-            gem.stopTimer();
-            gem.resetPosition();
-            gem.startTimer(5000);
-        }
-
         allEnemies.forEach(function(enemy) {
             // If the enemy is on the same row as the player and is within
             // 80 pixels of the player's left or right, trigger a collison
             if ((enemy.y === playerYOffset) && (enemy.x >= player.x - 80) && (enemy.x <= player.x + 80))
                 player.death();
         });
+
+        if ((gem.x === playerXOffset) && (gemYOffset === player.y))
+            gem.gotGem();
     }
 
     /* This is called by the update function and loops through all of the
@@ -212,4 +211,7 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+    // Make sounds object global for use in the app.js files
+    global.sounds = sounds;
 })(this);
