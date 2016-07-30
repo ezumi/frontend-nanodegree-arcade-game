@@ -4,6 +4,9 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 
+    // Set default speed of enemy
+    this.baseSpeed = 60;
+
     // Initiate enemy position
     this.resetPosition();
 };
@@ -13,13 +16,11 @@ Enemy.prototype.resetPosition = function() {
     /* Variables: Y_OFFSET, Adjust sprite position to be centered on stone tile
      *            TILE_WIDTH, Width of tile
      *            EXPOSED_TILE_HEIGHT, Height of the stone tile exposed
-     *            DEFAULT_SPEED, Default speed of enemy
      */
 
     var Y_OFFSET = -24,
         TILE_WIDTH = 101,
-        EXPOSED_TILE_HEIGHT = 83,
-        DEFAULT_SPEED = 60;
+        EXPOSED_TILE_HEIGHT = 83;
 
     // Set enemy's X position to be 1 tile off screen
     this.x = -TILE_WIDTH;
@@ -30,7 +31,22 @@ Enemy.prototype.resetPosition = function() {
 
     // Set enemy's speed by multiplying default speed with a randomly
     // generated number between 1 - 5
-    this.speed = DEFAULT_SPEED * (Math.floor(Math.random() * (5 - 1 + 1)) + 1);
+    this.speed = this.baseSpeed * (Math.floor(Math.random() * (5 - 1 + 1)) + 1);
+};
+
+// Function to increase base speed of the enemy
+// Parameter: amount, amount of speed to increase by
+//            maxSpeed, set the maximum speed 
+Enemy.prototype.addSpeed = function(amount, maxSpeed) {
+    // Make sure current speed is less than the defined limit
+    if (this.baseSpeed < maxSpeed)
+        this.baseSpeed += amount;
+};
+
+// Function to set the enemy's base speed
+// Parameter: newSpeed, new base speed
+Enemy.prototype.setSpeed = function(newSpeed) {
+    this.baseSpeed = newSpeed;
 };
 
 // Update the enemy's position, required method for game
@@ -55,9 +71,10 @@ Enemy.prototype.render = function() {
 
 // Player class with initial score and 3 lives
 var Player = function() {
+    this.alive = true;
     this.score = 0;
     this.lives = 3;
-    this.alive = true;
+    this.level = 1;
     this.sprite = 'images/char-boy.png';
 
     // Initate starting position
@@ -105,13 +122,8 @@ Player.prototype.handleInput = function(keyCode) {
                 // Check to see if player has reached the river
                 if (this.y > 0) {
                     this.y += -83;
-                    // Add to score when river has been reached and
-                    // reset player position
                     if (this.y === -10) {
-                        sounds.playSound(2);
-                        this.addPoints(10);
-                        var _this = this;
-                        setTimeout(function(){_this.resetPosition();}, 200);
+                        this.levelUp();
                     }
                 }
                 break;
@@ -129,6 +141,27 @@ Player.prototype.handleInput = function(keyCode) {
         // Play moving sound effect
         sounds.playSound(1);
     }
+};
+
+// Function to handle when the player crosses the river
+Player.prototype.levelUp = function() {
+    sounds.playSound(2);
+
+    // Each time the player crosses the river, he gains a level and
+    // the score increases by a multiple of this level
+    this.level++;
+    this.addPoints(this.level*500);
+    document.querySelector(".levels").innerHTML = this.level;
+
+    // Reset the player position
+    var _this = this;
+    setTimeout(function(){_this.resetPosition();}, 200);
+
+    // Increase enemy speeds by the player's level multiplied by 5. Maximum
+    // speed limit is 130
+    for (var i = 0; i < allEnemies.length; i++) {
+            allEnemies[i].addSpeed(this.level * 5, 130);
+        }
 };
 
 // Function to handle the player's death
@@ -153,8 +186,15 @@ Player.prototype.death = function() {
             message.showMessage("Game Over!\nFinal Score: "+this.score, 2000, true);
             this.lives = 3;
             this.score = 0;
-            document.querySelector(".lives").innerHTML = 3;
-            document.querySelector(".score").innerHTML = 0;
+            this.level = 1;
+            document.querySelector(".lives").innerHTML = this.lives;
+            document.querySelector(".score").innerHTML = this.score;
+            document.querySelector(".levels").innerHTML = this.level;
+
+            // Reset enemies base speed
+            for (var i = 0; i < allEnemies.length; i++) {
+                allEnemies[i].setSpeed(60);
+            }
         } else {
             sounds.playSound(3);
             message.showMessage("Ouch!", 750, true);

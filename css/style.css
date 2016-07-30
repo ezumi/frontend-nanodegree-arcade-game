@@ -4,4 +4,10 @@ body {
 
 h1 {
     font: 2em/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif;
+    margin: 10px;
+}
+
+h2 {
+    font: 1.7em/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif;	
+    margin: 10px;
 }
