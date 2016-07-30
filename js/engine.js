@@ -87,12 +87,12 @@ var Engine = (function(global) {
         checkCollisions();
     }
 
-    // Function to detect collisions with gems or enemies
+    // Function to detect collisions with powerups or enemies
     function checkCollisions() {
-        // Player's and Gem's Offset is adjusted to match those of the enemy and each other
+        // Player's and Powerup's Offset is adjusted to match those of the enemy and each other
         var playerYOffset = player.y - 14;
         var playerXOffset = player.x + 14.5;
-        var gemYOffset = gem.y - 23;
+        var powerupYOffset = powerup.y - 23;
 
         allEnemies.forEach(function(enemy) {
             // If the enemy is on the same row as the player and is within
@@ -101,8 +101,8 @@ var Engine = (function(global) {
                 player.death();
         });
 
-        if ((gem.x === playerXOffset) && (gemYOffset === player.y))
-            gem.gotGem();
+        if ((powerup.x === playerXOffset) && (powerupYOffset === player.y))
+            powerup.gotPowerup();
     }
 
     /* This is called by the update function and loops through all of the
@@ -169,7 +169,7 @@ var Engine = (function(global) {
          * the render function you have defined.
          */
 
-        gem.render();
+        powerup.render();
 
         allEnemies.forEach(function(enemy) {
             enemy.render();
@@ -203,6 +203,7 @@ var Engine = (function(global) {
         'images/Gem Blue.png',
         'images/Gem Green.png',
         'images/Gem Orange.png',
+        'images/Heart.png',
     ]);
     Resources.onReady(init);
 

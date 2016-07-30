@@ -101,9 +101,17 @@ Player.prototype.resetPosition = function() {
 };
 
 // Function to add points to the player's current score
+// Parameter: points, points to add to player's score
 Player.prototype.addPoints = function(points) {
     this.score += points;
     document.querySelector(".score").innerHTML = this.score;
+};
+
+// Function to add lives to the player's remaining lives
+// Parameter: lives, amount of lives to add to player's lives
+Player.prototype.addLives = function(lives) {
+    this.lives += lives;
+    document.querySelector(".lives").innerHTML = this.lives;
 };
 
 // Function to determine what happens when specific
@@ -207,23 +215,24 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Gem class
-var Gem = function() {
+// Powerup class
+var Powerup = function() {
+    this.lives = 0;
     this.resetPosition();
     this.startTimer(5000);
 };
 
-// Function to randomly assign sprite, point value, and position of generated gem
-Gem.prototype.resetPosition = function() {
+// Function to randomly assign sprite, point value, and position of generated powerup
+Powerup.prototype.resetPosition = function() {
     var EXPOSED_TILE_HEIGHT = 83,
         TILE_WIDTH = 101,
         Y_OFFSET = 13,
         X_OFFSET = 15,
         COLUMNS = 5;
 
-    var initGem = (Math.floor(Math.random() * (3 - 1 + 1)) + 1);
+    var initPowerup = (Math.floor(Math.random() * (4 - 1 + 1)) + 1);
 
-    switch(initGem) {
+    switch(initPowerup) {
         case 1:
             this.sprite = 'images/Gem Blue.png';
             this.points = 100;
@@ -236,6 +245,11 @@ Gem.prototype.resetPosition = function() {
             this.sprite = 'images/Gem Orange.png';
             this.points = 300;
             break;
+        case 4:
+            this.sprite = 'images/Heart.png';
+            this.points = 0;
+            this.lives = 1;
+            break;
     }
 
     this.x = X_OFFSET + TILE_WIDTH * (Math.floor(Math.random() * (COLUMNS - 1 - 0 + 1)) + 0);
@@ -244,7 +258,7 @@ Gem.prototype.resetPosition = function() {
 
 // Function that calls the resetPosition function after a specified amount of time
 // Parameter: timer, amount of time between each reset
-Gem.prototype.startTimer = function(time) {
+Powerup.prototype.startTimer = function(time) {
     var _this = this;
 
     this.timer = setInterval(function(){
@@ -253,14 +267,18 @@ Gem.prototype.startTimer = function(time) {
 };
 
 // Function to stop the current timer
-Gem.prototype.stopTimer = function() {
+Powerup.prototype.stopTimer = function() {
     clearInterval(this.timer);
 };
 
-// Function called when player grabs a gem
-Gem.prototype.gotGem = function() {
-    if(player.alive) {
+// Function called when player grabs a powerup
+Powerup.prototype.gotPowerup = function() {
+    if (player.alive) {
         player.addPoints(this.points);
+        if (this.lives) {
+            player.addLives(this.lives);
+            this.lives = 0;
+        }
         sounds.playSound(0);
     }
 
@@ -269,12 +287,12 @@ Gem.prototype.gotGem = function() {
     this.startTimer(5000);
 };
 
-/* Draw the gem on the screen, required method for game
- * Variables: SCALE, Scale to draw gem sprite
+/* Draw the powerup on the screen, required method for game
+ * Variables: SCALE, Scale to draw powerup sprite
  *            TILE_HEIGHT, Width of tile
  *            TILE_WIDTH, Height of tile
  */
-Gem.prototype.render = function () {
+Powerup.prototype.render = function () {
     var SCALE = 0.7,
         TILE_HEIGHT = 171,
         TILE_WIDTH = 101;
@@ -355,7 +373,7 @@ for (var i = 0; i < 5; i++) {
 }
 
 var player = new Player();
-var gem = new Gem();
+var powerup = new Powerup();
 var message = new Message();
 
 // This listens for key presses and sends the keys to your
