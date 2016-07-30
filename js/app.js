@@ -217,7 +217,6 @@ Player.prototype.render = function() {
 
 // Powerup class
 var Powerup = function() {
-    this.lives = 0;
     this.resetPosition();
     this.startTimer(5000);
 };
@@ -230,7 +229,11 @@ Powerup.prototype.resetPosition = function() {
         X_OFFSET = 15,
         COLUMNS = 5;
 
-    var initPowerup = (Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+    var initPowerup = (Math.floor(Math.random() * (5 - 1 + 1)) + 1);
+
+    this.yAdjustment = 0;
+    this.lives = 0;
+    this.points = 0;
 
     switch(initPowerup) {
         case 1:
@@ -247,13 +250,31 @@ Powerup.prototype.resetPosition = function() {
             break;
         case 4:
             this.sprite = 'images/Heart.png';
-            this.points = 0;
+
+            // y offset needs to be adjusted for this powerup
+            // due to the image size differences. This is for
+            // centering purposes 
+            this.yAdjustment = 11;
             this.lives = 1;
+            break;
+        case 5:
+            this.sprite = 'images/Key.png';
+
+            // y offset needs to be adjusted for this powerup
+            // due to the image size differences. This is for
+            // centering purposes 
+            this.yAdjustment = 5;
+
+            // Slow all enemies speed by 30%
+            for (var i = 0; i < allEnemies.length; i++) {
+                if (allEnemies[i].baseSpeed > 60)
+                    allEnemies[i].setSpeed(allEnemies[i].baseSpeed*0.30);
+            }
             break;
     }
 
     this.x = X_OFFSET + TILE_WIDTH * (Math.floor(Math.random() * (COLUMNS - 1 - 0 + 1)) + 0);
-    this.y = Y_OFFSET + EXPOSED_TILE_HEIGHT * (Math.floor(Math.random() * (3 - 1 + 1)) + 1);
+    this.y = Y_OFFSET + this.yAdjustment + EXPOSED_TILE_HEIGHT * (Math.floor(Math.random() * (3 - 1 + 1)) + 1);
 };
 
 // Function that calls the resetPosition function after a specified amount of time
@@ -275,6 +296,8 @@ Powerup.prototype.stopTimer = function() {
 Powerup.prototype.gotPowerup = function() {
     if (player.alive) {
         player.addPoints(this.points);
+
+        // Add lives if powerup is the Heart
         if (this.lives) {
             player.addLives(this.lives);
             this.lives = 0;

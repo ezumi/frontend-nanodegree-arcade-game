@@ -92,7 +92,7 @@ var Engine = (function(global) {
         // Player's and Powerup's Offset is adjusted to match those of the enemy and each other
         var playerYOffset = player.y - 14;
         var playerXOffset = player.x + 14.5;
-        var powerupYOffset = powerup.y - 23;
+        var powerupYOffset = powerup.y - 23 - powerup.yAdjustment;
 
         allEnemies.forEach(function(enemy) {
             // If the enemy is on the same row as the player and is within
@@ -204,6 +204,7 @@ var Engine = (function(global) {
         'images/Gem Green.png',
         'images/Gem Orange.png',
         'images/Heart.png',
+        'images/Key.png',
     ]);
     Resources.onReady(init);
 
