@@ -69,16 +69,29 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Player class with initial score and 3 lives
+// Player class
 var Player = function() {
     this.alive = true;
     this.score = 0;
     this.lives = 3;
     this.level = 1;
+    this.selectSprite = 0;
     this.sprite = 'images/char-boy.png';
 
     // Initate starting position
     this.resetPosition();
+};
+
+// Function for changing the sprite image of the player
+Player.prototype.changeHero = function() {
+    // Holds an array of images that the user can choose from
+    var sprites = ['images/char-boy.png',
+                   'images/char-cat-girl.png',
+                   'images/char-horn-girl.png',
+                   'images/char-pink-girl.png',
+                   'images/char-princess-girl.png',
+                   ];
+    this.sprite = sprites[this.selectSprite];
 };
 
 // Resets the player to it's initial position
@@ -217,7 +230,10 @@ Player.prototype.render = function() {
 
 // Powerup class
 var Powerup = function() {
+    // Initialize powerup position
     this.resetPosition();
+
+    // Start timer that generates a new position and powerup after 5 seconds
     this.startTimer(5000);
 };
 
@@ -229,8 +245,15 @@ Powerup.prototype.resetPosition = function() {
         X_OFFSET = 15,
         COLUMNS = 5;
 
+    // Randomly generate a number from 1 - 5 to correspond to an unique powerup
     var initPowerup = (Math.floor(Math.random() * (5 - 1 + 1)) + 1);
 
+    // Resets variables to zero.
+    // Variable: yAdjustment, holds a variable that is for centering the heart
+    //           and key image on the tiles.
+    //           lives, holds that amount of lives to add when the player
+    //           collects a heart powerup
+    //           points, holds the point value of gems
     this.yAdjustment = 0;
     this.lives = 0;
     this.points = 0;
@@ -414,4 +437,25 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
+});
+
+$(document).ready(function(){
+    // Click event handler, when user clicks on an avatar image
+    $('.avatar-hero').click(function(){
+        // Variable to hold the detached selector image
+        var select = $('.selector').detach();
+
+        // Attaches the selector image to the avatar image that is clicked
+        $(this).prepend(select);
+
+        // Clears the color from all heroes
+        $('.hero-image').removeClass('hero-image-color');
+
+        // Apply color to the avatar image that is clicked
+        $(this).children('.hero-image').toggleClass('hero-image-color');
+
+        // Stores selected sprite index into player class' selectSprite
+        // variable
+        player.selectSprite = $(this).index();
+    });
 });
