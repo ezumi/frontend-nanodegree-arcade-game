@@ -1,16 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Effective JavaScript: Frogger</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Esmond Kan | Frogger Game Clone</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" crossorigin="anonymous"></script>
 </head>
 <body>
+    <!-- Modal !-->
+    <section id="helpModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal Content !-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><i class="fa fa-times"></i></button>
+                    <h4 class="modal-title">How To Play Frogger</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Use the arrow or <kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd> keys to move your avatar.</p>
+                    <p>Avoid the bugs moving on the screen.</p>
+                    <p>Cross into the river to get more points and level up. <strong>But watch out!</strong> The bugs speed up every time you cross.</p>
+                    <p>
+                        Grab gems for extra points.
+                        <ul>
+                            <li>100 Points - Blue gem</li>
+                            <li>200 Points - Green gem</li>
+                            <li>300 Points - Orange gem</li>
+                        </ul>
+                    </p>
+                    <p>Grab hearts for extra lives.</p>
+                    <p>Grab keys to slow the enemies down.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok, I Got It!</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal !-->
+    <section id="changeModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal Content !-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><i class="fa fa-times"></i></button>
+                    <h4 class="modal-title">Change Your Avatar</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Choose your avatar below and press <kbd>Select</kbd> to change your hero.</p>
+                    <section class="avatar-menu">
+                        <div class="avatar-hero">
+                            <img src="images\Selector.png" class="selector">
+                            <img src="images\char-boy.png" class="hero-image">
+                        </div>
+                        <div class="avatar-hero">
+                            <img src="images\char-cat-girl.png" class="hero-image">
+                        </div>
+                        <div class="avatar-hero">
+                            <img src="images\char-horn-girl.png" class="hero-image">
+                        </div>
+                        <div class="avatar-hero">
+                            <img src="images\char-pink-girl.png" class="hero-image">
+                        </div>
+                        <div class="avatar-hero">
+                            <img src="images\char-princess-girl.png" class="hero-image">
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="button-bar">
+        <button type="button" class="btn btn-default help" data-toggle="modal" data-target="#helpModal">Help</button>
+        <button type="button" class="btn btn-primary switch" data-toggle="modal" data-target="#changeModal">Change Avatar</button>
+    </section>
+
     <script src="js/resources.js"></script>
     <script src="js/sound.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/app.js"></script>
-	<h2>Level <span class="levels">1</span></h1>
-    <h1>Score: <span class="score">0</span> Lives: <span class="lives">3</span></h1>
+
+    <section class="score-board">
+        <h2 class="h2-levels">Level <span class="levels">1</span></h2>
+        <h2 class="h2-lives">Lives: <span class="lives">3</span></h2>
+        <div style="clear:both;"></div>
+        <h1>Score: <span class="score">0</span></h1>
+    </section>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>
