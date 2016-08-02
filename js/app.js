@@ -85,12 +85,13 @@ var Player = function() {
 // Function for changing the sprite image of the player
 Player.prototype.changeHero = function() {
     // Holds an array of images that the user can choose from
-    var sprites = ['images/char-boy.png',
-                   'images/char-cat-girl.png',
-                   'images/char-horn-girl.png',
-                   'images/char-pink-girl.png',
-                   'images/char-princess-girl.png',
-                   ];
+    var sprites = [
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+    ];
     this.sprite = sprites[this.selectSprite];
 };
 
