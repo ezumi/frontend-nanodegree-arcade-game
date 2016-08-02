@@ -1,5 +1,4 @@
 # Frontend Nanodegree Arcade Game - Frogger
-===============================
 
 GitHub: [GitHub/ezumi](https://github.com/ezumi/frontend-nanodegree-arcade-game)
 
